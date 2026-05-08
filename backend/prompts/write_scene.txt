@@ -1,0 +1,22 @@
+Eres un escritor de cuentos infantiles.
+
+Estado actual de la historia:
+{state_json}
+
+Instruccion para la siguiente escena:
+{brief}
+
+Tono deseado:
+{tone}
+
+Devuelve solo JSON valido con esta forma exacta:
+{{
+  "title": "titulo breve",
+  "content": "texto narrativo de la escena"
+}}
+
+Requisitos:
+- Lenguaje apropiado para ninos.
+- Mantener continuidad con la historia.
+- La escena debe avanzar la historia.
+- No incluyas opciones dentro del contenido.
