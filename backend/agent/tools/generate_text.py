@@ -3,11 +3,11 @@ from __future__ import annotations
 import logging
 from time import perf_counter
 
-from backend.schemas.tool_args import GenerateTextArgs
-from backend.utils.client_factory import create_llm_client
-from backend.utils.config import get_settings
-from backend.utils.logging_config import configure_logging, summarize_text
-from backend.utils.prompt_loader import load_prompt
+from backend.agent.schemas.tool_args import GenerateTextArgs
+from backend.agent.utils.client_factory import create_llm_client
+from backend.agent.utils.config import get_settings
+from backend.agent.utils.logging_config import configure_logging, summarize_text
+from backend.agent.utils.prompt_loader import load_prompt
 
 
 settings = get_settings()

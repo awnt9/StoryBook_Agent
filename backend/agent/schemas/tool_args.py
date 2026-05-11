@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from backend.schemas.objects import Image
+from backend.agent.schemas.objects import Image
 
 
 class GenerateTextArgs(BaseModel):

@@ -3,17 +3,17 @@ from __future__ import annotations
 import logging
 from time import perf_counter
 
-from backend.schemas.tool_args import AnalyzeImageArgs
-from backend.utils.client_factory import create_llm_client
-from backend.utils.config import get_settings
-from backend.utils.logging_config import configure_logging, summarize_for_log, summarize_text
-from backend.utils.prompt_loader import load_prompt
-from backend.utils.image_resolver import image_to_photo
+from backend.agent.schemas.tool_args import AnalyzeImageArgs
+from backend.agent.utils.client_factory import create_llm_client
+from backend.agent.utils.config import get_settings
+from backend.agent.utils.logging_config import configure_logging, summarize_for_log, summarize_text
+from backend.agent.utils.prompt_loader import load_prompt
+from backend.agent.utils.image_resolver import image_to_photo
 
 import base64
 from pathlib import Path
 
-from backend.schemas.objects import Image
+from backend.agent.schemas.objects import Image
 
 
 settings = get_settings()

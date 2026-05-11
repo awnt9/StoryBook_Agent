@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import logging
-from time import perf_counter
 from typing import Any
 
 from backend.agent.utils.config import get_settings
@@ -151,7 +150,6 @@ def run_agent_loop(state: StoryState, action: UserAction) -> Scene:
                 ),
             )
 
-            tool_start = perf_counter()
             logger.info("tool.execution.start iteration=%s tool=%s", iteration, selected_tool_name)
             try:
                 output_payload = _execute_tool(tool_name=selected_tool_name, arguments=arguments)

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import logging
 
-from backend.schemas.tool_args import EndLoopArgs
-from backend.utils.config import get_settings
-from backend.utils.logging_config import configure_logging, summarize_text
+from backend.agent.schemas.tool_args import EndLoopArgs
+from backend.agent.utils.config import get_settings
+from backend.agent.utils.logging_config import configure_logging, summarize_text
 
 
 settings = get_settings()
