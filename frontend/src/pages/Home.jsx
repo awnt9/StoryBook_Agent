@@ -22,7 +22,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#fff5cf] text-slate-900">
+    <div className="min-h-screen overflow-x-hidden bg-[#fff5cf] text-slate-900">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.7 }}
