@@ -39,7 +39,7 @@ class AuthService:
             api_key=self._clean_api_key(api_key),
         )
 
-    def login(self, email: str, password: str, api_key: str) -> tuple[User, str, str]:
+    def login(self, email: str, password: str) -> tuple[User, str, str]:
         user = self.user_repository.get_by_email(email)
 
         if not user or not verify_password(password, user.hashed_password):
@@ -53,11 +53,6 @@ class AuthService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Inactive user",
             )
-
-        clean_api_key = self._clean_api_key(api_key)
-
-        if user.api_key != clean_api_key:
-            user = self.user_repository.update_api_key(user=user, api_key=clean_api_key)
 
         access_token = create_access_token(subject=str(user.id))
         refresh_token = create_refresh_token()

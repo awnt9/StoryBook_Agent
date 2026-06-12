@@ -33,7 +33,6 @@ def login(
     user, access_token, refresh_token = AuthService(db).login(
         email=payload.email,
         password=payload.password,
-        api_key=payload.api_key,
     )
 
     response.set_cookie(

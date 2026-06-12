@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { KeyRound, Loader2, Lock, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { Loader2, Lock, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 const fadeInUp = {
@@ -16,7 +16,6 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [apiKey, setApiKey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event) => {
@@ -30,7 +29,7 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ email, password, api_key: apiKey.trim() }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -40,7 +39,6 @@ export default function Login() {
       const data = await response.json();
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("openai_api_key", apiKey.trim());
 
       toast.success("Sesion iniciada");
       navigate(redirectTo, { replace: true });
@@ -128,7 +126,7 @@ export default function Login() {
           >
             <ShieldCheck className="mt-1 h-6 w-6 shrink-0" />
             <p className="text-slate-700">
-              El agente usa modelos de IA que consumen tokens. Por eso cada usuario debe introducir su propia API key:
+              El agente usa modelos de IA que consumen tokens. Por eso cada usuario registra su propia API key:
               asi cada historia se genera con los creditos de su cuenta y no con una clave compartida.
             </p>
           </motion.div>
@@ -203,48 +201,10 @@ export default function Login() {
             </div>
           </motion.label>
 
-          <motion.label
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.68 }}
-            className="mt-5 block"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-sm font-black uppercase tracking-wide text-slate-700">API key de OpenAI</span>
-              <p className="text-center text-sm font-bold text-slate-700">
-                <Link to="/register" className="underline decoration-2 underline-offset-4 hover:text-slate-950">
-                  No tienes una cuenta? Regístrate
-                </Link>
-              </p>
-            </div>
-            <div className="mt-2 flex items-center gap-3 rounded-2xl border-4 border-slate-900 bg-yellow-100 px-4 py-3">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.8 }}
-              >
-                <KeyRound className="h-5 w-5 shrink-0" />
-              </motion.div>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(event) => setApiKey(event.target.value)}
-                className="w-full bg-transparent font-bold outline-none placeholder:text-slate-500"
-                placeholder="sk-..."
-                autoComplete="off"
-                spellCheck="false"
-                required
-              />
-            </div>
-            <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-600">
-              Se guardara en este navegador para que el agente pueda usarla cuando generes texto, imagenes o analisis.
-            </p>
-          </motion.label>
-
           <motion.button
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.45, delay: 0.82 }}
+            transition={{ duration: 0.45, delay: 0.68 }}
             whileHover={{ y: -4 }}
             whileTap={{ y: 0, scale: 0.98 }}
             type="submit"
@@ -254,6 +214,13 @@ export default function Login() {
             {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
             Entrar
           </motion.button>
+
+          <p className="mt-5 text-center text-sm font-bold text-slate-700">
+            No tienes una cuenta?{" "}
+            <Link to="/register" className="underline decoration-4 underline-offset-4 hover:text-slate-950">
+              Registrate
+            </Link>
+          </p>
         </motion.form>
       </main>
     </div>
