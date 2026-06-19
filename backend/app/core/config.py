@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -30,7 +31,12 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
 
+    agent_api_key: str | None = None
+    agent_model: str = "openai-chat:gpt-4o-mini"
+    model_name: str = "gpt-4o-mini"
+    base_url: str | None = None
     agent_max_iterations: int = 4
+
     log_level: str = "INFO"
     log_llm_payloads: bool = False
     log_file: str | None = None
@@ -48,3 +54,12 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+
+def get_agent_api_key() -> str:
+    api_key = settings.agent_api_key or os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("Missing AGENT_API_KEY or OPENAI_API_KEY.")
+
+    return api_key
