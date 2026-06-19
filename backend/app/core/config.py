@@ -3,7 +3,6 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,9 +30,6 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
 
-    api_key: SecretStr | None = None
-    base_url: str | None = None
-    model_name: str = "Hermes-4.3-36B"
     agent_max_iterations: int = 4
     log_level: str = "INFO"
     log_llm_payloads: bool = False
@@ -49,13 +45,6 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
-
-def get_agent_api_key() -> str:
-    if settings.api_key is None:
-        raise ValueError("API_KEY is missing from the environment and .env file.")
-
-    return settings.api_key.get_secret_value()
 
 
 settings = get_settings()
