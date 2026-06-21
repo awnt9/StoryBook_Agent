@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Sparkles, Palette, Zap, Wand2, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -44,7 +45,7 @@ export default function Home() {
         />
       </div>
 
-      <motion.header
+      {localStorage.getItem("access_token") ? <Navbar /> : <motion.header
         {...fadeInUp}
         transition={{ duration: 0.5 }}
         className="relative z-10 mx-auto flex max-w-7xl items-center px-6 py-6"
@@ -95,7 +96,7 @@ export default function Home() {
             </motion.a>
           </nav>
         </motion.div>
-      </motion.header>
+      </motion.header>}
 
       <main className="relative z-10">
         <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-24">
