@@ -3,6 +3,8 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from cryptography.fernet import Fernet
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,6 +30,8 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
 
+    api_key_encryption_key: SecretStr
+
     agent_max_iterations: int = 5
 
     model_config = SettingsConfigDict(
@@ -35,6 +39,15 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @field_validator("api_key_encryption_key")
+    @classmethod
+    def validate_api_key_encryption_key(cls, value: SecretStr) -> SecretStr:
+        try:
+            Fernet(value.get_secret_value().encode("utf-8"))
+        except (TypeError, ValueError) as error:
+            raise ValueError("must be a valid Fernet key") from error
+        return value
 
 
 @lru_cache

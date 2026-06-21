@@ -19,4 +19,5 @@ dependencies = [
     "python-multipart>=0.0.28",
     "email-validator>=2.3.0",
     "bcrypt==4.0.1",
+    "cryptography>=48.0.0",
 ]
