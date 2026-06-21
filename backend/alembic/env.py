@@ -7,6 +7,7 @@ from sqlmodel import SQLModel
 from alembic import context
 
 import app.schemas.user
+import app.schemas.api_key
 
 from app.core.config import settings
 

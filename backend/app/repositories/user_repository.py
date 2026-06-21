@@ -27,12 +27,3 @@ class UserRepository:
         self.db.refresh(user)
 
         return user
-
-    def update_api_key(self, user: User, api_key: str) -> User:
-        user.api_key = api_key
-
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
-
-        return user
