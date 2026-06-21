@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, health, users
+from app.api.v1 import api_keys, auth, health, users
 
 
 router = APIRouter()
@@ -21,4 +21,10 @@ router.include_router(
     users.router,
     prefix="/users",
     tags=["Users"],
+)
+
+router.include_router(
+    api_keys.router,
+    prefix="/users/me/api-keys",
+    tags=["API Keys"],
 )
