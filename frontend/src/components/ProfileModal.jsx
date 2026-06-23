@@ -1,22 +1,8 @@
 import { useEffect, useState } from "react";
 import { Check, Copy, Eye, EyeOff, KeyRound, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-
-async function apiRequest(path, options = {}) {
-  const response = await fetch(path, {
-    ...options,
-    headers: {
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      ...options.headers,
-    },
-  });
-  if (!response.ok) {
-    const payload = await response.json().catch(() => null);
-    throw new Error(payload?.detail || "No se pudo completar la operación");
-  }
-  return response.status === 204 ? null : response.json();
-}
+import ConfirmDialog from "./ConfirmDialog";
+import { apiRequest } from "../lib/api";
 
 export default function ProfileModal({ isOpen, onClose }) {
   const [apiKeys, setApiKeys] = useState([]);
@@ -26,6 +12,7 @@ export default function ProfileModal({ isOpen, onClose }) {
   const [apiKey, setApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [keyToDelete, setKeyToDelete] = useState(null);
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
@@ -45,10 +32,17 @@ export default function ProfileModal({ isOpen, onClose }) {
 
   useEffect(() => {
     if (!isOpen) return undefined;
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      if (keyToDelete && pendingAction !== `delete-${keyToDelete.id}`) {
+        setKeyToDelete(null);
+        return;
+      }
+      if (!keyToDelete) onClose();
+    };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, keyToDelete, onClose, pendingAction]);
 
   if (!isOpen) return null;
 
@@ -105,7 +99,6 @@ export default function ProfileModal({ isOpen, onClose }) {
   };
 
   const deleteApiKey = async (id) => {
-    if (!window.confirm("¿Quieres borrar esta API key?")) return;
     setPendingAction(`delete-${id}`);
     try {
       await apiRequest(`/api/v1/users/me/api-keys/${id}`, { method: "DELETE" });
@@ -119,6 +112,7 @@ export default function ProfileModal({ isOpen, onClose }) {
         delete next[id];
         return next;
       });
+      setKeyToDelete(null);
       toast.success("API key eliminada");
     } catch (error) {
       toast.error(error.message);
@@ -170,7 +164,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                     <button type="button" onClick={() => toggleReveal(storedKey.id)} disabled={pendingAction === `reveal-${storedKey.id}`} className="rounded-xl border-2 border-slate-900 bg-cyan-200 p-2" aria-label={revealedValue ? "Ocultar API key" : "Mostrar API key"}>{revealedValue ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                     {revealedValue && <button type="button" onClick={() => copyApiKey(revealedValue)} className="rounded-xl border-2 border-slate-900 bg-yellow-200 p-2" aria-label="Copiar API key"><Copy className="h-4 w-4" /></button>}
                     {!storedKey.is_selected && <button type="button" onClick={() => selectApiKey(storedKey.id)} disabled={pendingAction === `select-${storedKey.id}`} className="rounded-xl border-2 border-slate-900 bg-lime-300 px-3 py-2 text-sm font-black">Usar</button>}
-                    <button type="button" onClick={() => deleteApiKey(storedKey.id)} disabled={pendingAction === `delete-${storedKey.id}`} className="rounded-xl border-2 border-slate-900 bg-red-300 p-2" aria-label="Eliminar API key"><Trash2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setKeyToDelete(storedKey)} disabled={pendingAction === `delete-${storedKey.id}`} className="rounded-xl border-2 border-slate-900 bg-red-300 p-2" aria-label="Eliminar API key"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </div>
               </article>
@@ -179,6 +173,14 @@ export default function ProfileModal({ isOpen, onClose }) {
         </section>
         </div>
       </div>
+      <ConfirmDialog
+        isOpen={Boolean(keyToDelete)}
+        title="¿Eliminar esta API key?"
+        description={keyToDelete ? `Vas a borrar “${keyToDelete.label}”. Esta acción no se puede deshacer.` : ""}
+        isPending={pendingAction === `delete-${keyToDelete?.id}`}
+        onCancel={() => setKeyToDelete(null)}
+        onConfirm={() => deleteApiKey(keyToDelete.id)}
+      />
     </div>
   );
 }
