@@ -8,6 +8,7 @@ from alembic import context
 
 import app.schemas.user
 import app.schemas.api_key
+import app.schemas.story_elements
 
 from app.core.config import settings
 

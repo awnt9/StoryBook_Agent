@@ -1,8 +1,14 @@
 from __future__ import annotations
 
-from typing import Any
+from dataclasses import dataclass
+from datetime import datetime
 
+from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import Field as SQLField
+from sqlmodel import SQLModel
 
 
 class Image(BaseModel):
@@ -18,6 +24,8 @@ class Image(BaseModel):
 class Scene(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    id: str | None = None
+    background_image: Image | None = None
     texts: str | list[str] = []
     images: Image | list[Image] = []
 
@@ -33,18 +41,38 @@ class StoryState(BaseModel):
 class UserAction(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    user_action: str | Image | None = None
+    text: str | None = None
+    image: Image | None = None
 
 
-class ToolCallRecord(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+@dataclass
+class ImageDeps:
+    openai_client: OpenAI
+    image_model: str
+    image_size: str
 
-    tool_name: str
-    arguments: dict[str, Any]
-    output: dict[str, Any]
+
+@dataclass
+class StoryAgentDeps:
+    user_id: int
+    history_id: str
+    action: UserAction
+    story_state: StoryState
+    openai_client: OpenAI
 
 
-class ToolHistory(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+class StoryHistory(SQLModel, table=True):
+    __tablename__ = "story_histories"
 
-    calls: list[ToolCallRecord] = Field(default_factory=list)
+    id: str = SQLField(primary_key=True, max_length=36)
+    user_id: int = SQLField(foreign_key="users.id", ondelete="CASCADE", index=True)
+    state: dict = SQLField(
+        default_factory=dict,
+        sa_column=Column(JSONB, nullable=False),
+    )
+    created_at: datetime = SQLField(default_factory=datetime.utcnow, nullable=False)
+    updated_at: datetime = SQLField(
+        default_factory=datetime.utcnow,
+        nullable=False,
+        sa_column_kwargs={"onupdate": datetime.utcnow},
+    )
